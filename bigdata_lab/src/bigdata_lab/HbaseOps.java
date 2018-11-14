@@ -10,8 +10,23 @@ public class HbaseOps {
 	public static Connection connection;
 	public static Admin admin;
 	public static Long ts;	// timeStamp
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
+		String[] book_fields = {"bookName","author"};
+		createTable("book",book_fields);
+		
+		String[] book_famliy={"bookName:a","author:b"};
+		String[] book_record1={"Database System Concept","SongTq"};
+		String[] book_record2={"Thinking in Java","Wangdashuai"};
+		String[] book_record3={"Data Mining","Wangjint"};
+		addRecord("book","val_60$",book_famliy,book_record1);
+		addRecord("book","val_30$",book_famliy,book_record2);
+		addRecord("book","val_30$",book_famliy,book_record3);
+		
+		scanColum("book","bookName");
+		
+		// modifyData("book","val_60$","author");
+		deleteRow("book","val_60");
 		
 	}
 	public static void init(){
@@ -49,6 +64,9 @@ public class HbaseOps {
 			TableName tableName = TableName.valueOf(name);
 			// If exits specified table, delete the old table first, then create a new one.
 			if(admin.tableExists(tableName)){
+			    if (admin.isTableEnabled(tableName)) {
+			        admin.disableTable(tableName);
+			    }
 				System.out.print("Replace the old table.");
 				admin.deleteTable(tableName);
 				
@@ -85,12 +103,16 @@ public class HbaseOps {
 		
 		Table table = connection.getTable(TableName.valueOf(tableName));
 		Put put = new Put(Bytes.toBytes(row));// 指定放到哪行
-		//首先需要解析field,例{“Score:Math”,"Score:Englist"},Score -> family, Math->qualifier
+		// 首先需要解析field,例{“Score:Math”,"Score:Englist"},Score -> family, Math->qualifier
 		for(int i = 0 ; i < fields.length; i ++){
 			String[] cols = fields[i].split(":");
-			String family = cols[0];
-			String qulifier = cols[1];
-			put.addColumn(Bytes.toBytes(family), Bytes.toBytes(qulifier), Bytes.toBytes(values[i]));
+			// 如果addRecord()中没有写列族。那么cols[0]直接可以确定
+			if(cols.length > 1){	// 有列族
+				String family = cols[0];
+				String qulifier = cols[1];
+				put.addColumn(Bytes.toBytes(family), Bytes.toBytes(qulifier), Bytes.toBytes(values[i]));
+			}
+			
 		}
 		table.put(put);
 		table.close();
@@ -149,7 +171,7 @@ public class HbaseOps {
 		Table table = connection.getTable(TableName.valueOf(tableName));
 		Delete del = new Delete(Bytes.toBytes(row));
 		table.delete(del);
-		
+		System.out.println("Delete table:"+tableName+",row"+row+" successfully!");
 		table.close();
 		close();
 	}

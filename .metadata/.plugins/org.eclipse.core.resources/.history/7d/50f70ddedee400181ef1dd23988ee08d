@@ -1,0 +1,41 @@
+package bigdata_lab;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.*;// in hadoop installing dir may exits hbase jar
+import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.util.Bytes;
+import java.io.IOException;
+
+public class HbaseOps {
+	public static Configuration configuration;
+	public static Connection connection;
+	public static Admin admin;
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+	}
+	public static void init(){
+		// create a connection
+	}
+	public static void close(){
+		// close the connection
+	}
+	public static void createTable(String name, String[] fields){
+		// create a table
+	}
+	public static void addRecord(){
+		// add a record
+	}
+	public static void scanColum(){
+		// scan 
+	}
+	public static void modifyData(){
+		
+	}
+	public static void deleteRow(){
+		
+	}
+	
+}
+
+

@@ -1,0 +1,100 @@
+package bigdata_lab;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.*;// in hadoop installing dir may exits hbase jar
+import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.util.Bytes;
+import java.io.IOException;
+
+public class HbaseOps {
+	public static Configuration configuration;
+	public static Connection connection;
+	public static Admin admin;
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+	}
+	public static void init(){
+		// create a connection
+		configuration = HBaseConfiguration.create();
+		configuration.set("hbase.rootdir", "hdfs://localhost:9000/hbase");
+		try{
+			connection = ConnectionFactory.createConnection(configuration);
+			admin = connection.getAdmin();
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	public static void close(){
+		// close the connection
+		try{
+			if(admin != null){
+				admin.close();
+			}
+			if(null != connection){
+				connection.close();
+			}
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	public static void createTable(String name, String[] fields){
+		// create a table
+		init();
+		
+		try{
+			TableName tableName = TableName.valueOf(name);
+			// If exits specified table, delete the old table first, then create a new one.
+			if(admin.tableExists(tableName)){
+				System.out.print("Replace the old table.");
+				admin.deleteTable(tableName);
+				
+			}
+			HTableDescriptor htableDes = new HTableDescriptor(tableName);
+			for(String str :fields){
+				HColumnDescriptor family = new HColumnDescriptor(str);
+				htableDes.addFamily(family);
+			}
+			
+			admin.createTable(htableDes);
+			
+			
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+		
+		close();
+	}
+	/*
+	 * @param tableName 表名
+	 * @param row 行键
+	 * @param fields 列族
+	 * 	s中每个元素如果对应的列族下还有相应的列限定符的话，用“columnFamily:column”表示。
+	 * 	例如，同时向“Math”、“Computer Science”、“English”三列添加成绩时，
+	 * 	字符串数组fields为{“Score:Math”,”Score:Computer Science”,”Score:English”}，
+	 * 	数组values存储这三门课的成绩。
+	 * @param values 数据
+	 * 
+	 * */
+	public static void addRecord(String tableName, String row, 
+			String[] fields, String[] values) throws IOException{
+		// add a record
+		Table table = connection.getTable(TableName.valueOf(tableName));
+		Put put = new Put(Bytes.toBytes(row));
+		
+		table.put(put);
+		table.close();
+	}
+	public static void scanColum(){
+		// scan 
+	}
+	public static void modifyData(){
+		
+	}
+	public static void deleteRow(){
+		
+	}
+	
+}
+
+

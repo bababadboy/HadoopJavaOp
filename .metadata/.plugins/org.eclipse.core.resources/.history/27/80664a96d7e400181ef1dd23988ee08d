@@ -1,0 +1,20 @@
+package bigdata_lab;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfighuration;// in hadoop installing dir may exits hbase jar
+
+
+public class HbaseOps {
+	public void createTable(String name, String[] fields){
+		
+	}
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
+
+class createTable {
+	
+}
